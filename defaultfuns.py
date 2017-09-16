@@ -65,7 +65,7 @@ def state_start(user, msg_content=None, args=None):
         }
     ]
 
-    text = "Where would you like to go?"
+    text = "Where would you like to search?"
     messenger.send_quickreply(user, text, quick_replies)
     return ["LOCATION", None]
 
@@ -123,41 +123,91 @@ def state_location(user, msg_content=None, args=None):
     if sta is None:
         messenger.sent_text(user, "Sorry no station is found")
     else:
-        messenger.send_location(user, sta[0][0]['latitude'], sta[0][0]['longitude'])
         posi1 = (location['lat'], location['long'])
-        for stai in sta:
-            name = stai[0]['name']
-            free = stai[0]['free_bikes']
-            slots = stai[0]['empty_slots']
-            posi2 = (stai[0]['latitude'], stai[0]['longitude'])
+        order = ["[1st]\n", "[2nd]\n", "[3rd]\n"]
+        for i in reversed(range(len(sta))):
+            name = sta[i][0]['name']
+            free = sta[i][0]['free_bikes']
+            slots = sta[i][0]['empty_slots']
+            posi2 = (sta[i][0]['latitude'], sta[i][0]['longitude'])
             distval = vincenty(posi1, posi2).meters
             dis = "{:1.1f}".format(distval)
-            emojf = u"\U0001F6B2"*min(10, free)
+            emojf = u"\U0001F6B2"*min(7, free)
             emojs = u"\U0001F17F"*min(10, slots)
-            messenger.send_text(user, "Station {sta}"\
-                "\n{bikes} free bikes, {park} empty slots.\
+
+            text = "{staorder}{sta}"\
+                "\n{bikes} bikes, {park} slots.\
                 \n{imgbikes}\
                 \n{imgslots}\
                 \n{dist} meters away."\
-                .format(sta=name, bikes=free, park=slots, imgbikes=emojf,\
-                imgslots=emojs, dist=dis, target=loca))
-                
-    return ["END", None]
+                .format(staorder=order[i], sta=name, bikes=free, park=slots, imgbikes=emojf,\
+                imgslots=emojs, dist=dis, target=loca)
+
+               
+            buttons = [{"type":"postback", "title":"View in map", "payload":"viewmap" + str(i)}]
+            if i is 0:
+                done = {"type":"postback", "title":"Done!", "payload":"done"}
+                buttons.append(done)
+            messenger.send_buttons(user, text, buttons)
 
 
+    return ["MAP", sta]
+
+
+#-------------------------------------------------------------------------------
+
+def check_map(data):
+    
+    [chat_id, msg_type, msg_content] = msganalyzer.glance_msg(data)
+        
+    if msg_type is 'postback':
+        if msg_content['title'] == 'View in map' or \
+                msg_content['title'] == 'Done!':
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+#-------------------------------------------------------------------------------
+
+def state_map(user, msg_content, args):
+
+    if msg_content['title'] == 'Done!':
+        return ["END", None]
+
+    sta = args
+    payload = msg_content['payload']
+    index = int(payload[len(payload) - 1:])
+    messenger.send_location(user, sta[index][0]['latitude'], sta[index][0]['longitude'])
+
+    buttons = [{"type":"postback", "title":"Done!", "payload":"done"}]
+    text = "Done?"
+    messenger.send_buttons(user, text, buttons)
+
+    return ["MAP", sta]
 
 ################################################################################
 
-state_funs = {"START":state_start, "LOCATION":state_location}
-check_funs = {"START":check_start, "LOCATION":check_location}
+state_funs = {"START":state_start, "LOCATION":state_location, "MAP":state_map}
+check_funs = {"START":check_start, "LOCATION":check_location, "MAP":check_map}
 
-#print(str(fbbot.get_pgmcmds()))
-#print("default pgm states = " +  str(fbbot.get_pgmstates("/default")))
+################################################################################
 
-fbbot.remove_pgm_state("/default", "RESPOND")
-fbbot.remove_pgm_state("/default", "QUICKRESPOND")
-fbbot.set_pgm_state("/default", "START", check_start, state_start)
-fbbot.add_pgm_state("/default", "LOCATION", check_location, state_location)
-print("default pgm states = " +  str(fbbot.get_pgmstates("/default")))
+if __name__ == "__main__":
 
-fbbot.run()
+    '''
+    for testing
+    '''
+    
+    fbbot.remove_pgm_state("/default", "RESPOND")
+    fbbot.remove_pgm_state("/default", "QUICKRESPOND")
+    fbbot.set_pgm_state("/default", "START", check_start, state_start)
+    fbbot.add_pgm_state("/default", "LOCATION", check_location, state_location)
+    fbbot.add_pgm_state("/default", "MAP", check_map, state_map)
+
+    print("default pgm states = " +  str(fbbot.get_pgmstates("/default")))
+
+    fbbot.run()
+
