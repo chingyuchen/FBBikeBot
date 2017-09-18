@@ -1,18 +1,48 @@
+################################################################################
+
+'''
+File : handleuserinfo.py
+Author: Ching-Yu Chen
+
+Description:
+handleuserinfo module is for edit, get and initialize the data base of the
+users' info.
+
+Copyright (c) 2017 Ching-Yu Chen
+'''
+
+################################################################################
+
 import sqlite3
 
+################################################################################
+
+# file name of the userinfo
 filename = 'usersinfo.sqlite3'
-#-------------------------------------------------------------------------
+
+################################################################################
 
 def run():
+
+    '''
+    Initialize the sqlfile. 
+    '''
+
     conn = sqlite3.connect(filename)
     cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS Favs (id TEXT, fav1lati REAL, fav1lon REAL, fav2lati REAL, fav2lon REAL, fav3lati REAL, fav3lon REAL)')
+    cur.execute('CREATE TABLE IF NOT EXISTS Favs (id TEXT, fav1lati REAL,'
+        ' fav1lon REAL, fav2lati REAL, fav2lon REAL, fav3lati REAL, fav3lon REAL)')
     conn.commit()
     conn.close()
 
-#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 def get(user, option=None):
+
+    '''
+    Return the user info according to the option.
+    '''
+
     if user is None:
         raise ValueError("user can't be none")
         return None 
@@ -45,10 +75,14 @@ def get(user, option=None):
         conn.close
         return location
         
-#-------------------------------------------------------------------------
+#---------------------------------------------------------------------------------
 
 def edit(user, option, lat, lon):
     
+    '''
+    Edit the user info to lat, lon in the option columns
+    '''
+
     conn = sqlite3.connect(filename)
     cur = conn.cursor()
 
@@ -81,7 +115,12 @@ def edit(user, option, lat, lon):
 #-------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    user = '1454392541282560'
+
+    '''
+    For testing
+    '''
+
+    user = input("Enter the user")
     run()
     print(str(get(user)))
     edit(user, 'fav2', 40, 75)

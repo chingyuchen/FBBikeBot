@@ -1,3 +1,18 @@
+##################################################################################
+
+'''
+File : fbbikebot.py
+Author: Ching-Yu Chen
+
+Description:
+fbbikebot.py is a facebook messenger bot which provides real-time information of 
+world-wide bike-share system.
+
+Copyright (c) 2017 Ching-Yu Chen
+'''
+
+##################################################################################
+
 import addrfuns
 import favsfuns
 import editfavfuns
@@ -11,6 +26,11 @@ import fbbot
 ##################################################################################
 
 def add_funs(pgmcmd, check_funs, state_funs):
+
+    '''
+    Add the check_funs and state_funs to the fbbot module corresponding to the
+    pgmcmd.
+    '''
 
     for key in state_funs:
         if key == "START":

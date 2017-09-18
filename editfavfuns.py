@@ -1,3 +1,18 @@
+################################################################################
+
+'''
+File : editfavfuns.py
+Author: Ching-Yu Chen
+
+Description:
+editfavfuns includes the check and state functions of the "/editfav" command 
+program. The editfavs program let users edit their list of favorite locations.
+
+Copyright (c) 2017 Ching-Yu Chen
+'''
+
+################################################################################
+
 import geocoder
 import handleuserinfo 
 import sys 
@@ -9,6 +24,7 @@ from geopy.distance import vincenty
 
 ################################################################################
 
+# google gecoder key
 geokey = ""
 try:
     with open('geocoder_key', 'r') as f:
@@ -18,19 +34,25 @@ try:
 except:
     print("error in accessing geocoder key")
 
-# Token of the bot.
-TOKEN = ""
-with open('Token', 'r') as f:
-    TOKEN = f.read().strip()
-    f.close()
-
-
 ################################################################################
 
 def check_start(data):
+
+    '''
+    Check function of the start state. Check if command in data is valid.
+    Return true.
+    '''
+
     return True
 
+#------------------------------------------------------------------------------
+
 def state_start(user, msg_content=None, args=None):
+
+    '''
+    Start state functions. Send user the list of their favrite location address,
+    and ask which one to edit in quick reply. Return next state.
+    '''
 
     favs = {"fav1":"", "fav2":"", "fav3":""}
     for key in favs:
@@ -79,10 +101,14 @@ def state_start(user, msg_content=None, args=None):
 
     return ["REQUEST", None]
 
-
 #--------------------------------------------------------------------------
 
 def check_request(data):
+
+    '''
+    Check function of the request state. Return true if the command in data
+    is valid, otherwise, return false.
+    '''
     
     [chat_id, msg_type, msg_content] = msganalyzer.glance_msg(data)
        
@@ -101,15 +127,24 @@ def check_request(data):
 
 def state_request(user, msg_content=None, args=None):
 
+    '''
+    Requst state function. Requst user to send the address. Return the 
+    option in msg_content and the next state.
+    '''
+
     option = msg_content['quick_reply']['payload']
     messenger.send_text(user, "Please enter the address.")
 
     return ["ADDRESS", option]
 
-
 #--------------------------------------------------------------------------
 
 def check_address(data):
+
+    '''
+    Check function of the address state. Return true if command in data is
+    valid. Otherwise return false.
+    '''
 
     [chat_id, msg_type, msg_content] = msganalyzer.glance_msg(data)
 
@@ -121,6 +156,14 @@ def check_address(data):
 #--------------------------------------------------------------------------
 
 def state_address(user, msg_content=None, args=None):
+
+    '''
+    State function of the address dtate. Use the addrss in msg_content to 
+    find the corresponding address. If corresponding address can't be find
+    send user message and raise the error. Otherwise send user the 
+    corresponding address and request quick reply if it is correct or not.
+    Return the address, location, option in args and the next state.
+    '''
 
     addr = msg_content['text']
     try:
@@ -159,6 +202,11 @@ def state_address(user, msg_content=None, args=None):
 
 def check_edit(data):
      
+    '''
+    Check function of edit state. If command in data is valid return true.
+    Otherwise, return false.
+    '''
+
     [chat_id, msg_type, msg_content] = msganalyzer.glance_msg(data)
 
     if msg_type is 'sent_msg' and 'text' in msg_content:
@@ -172,6 +220,12 @@ def check_edit(data):
 
 def state_edit(user, msg_content, args):
     
+    '''
+    Edit state function. if the reply from user in msg_content is correct
+    send user message "finished edit" and return end state. Otherwise,
+    request the address again and return the next state.
+    '''
+
     reply = msg_content['quick_reply']['payload']
     if reply == "incorrect":
         messenger.send_text(user, "Please enter the address again.")
@@ -186,8 +240,13 @@ def state_edit(user, msg_content, args):
 
 ################################################################################
 
-state_funs = {"START":state_start, "REQUEST":state_request, "ADDRESS":state_address, "EDIT":state_edit}
-check_funs = {"START":check_start, "REQUEST":check_request, "ADDRESS":check_address, "EDIT":check_edit}
+# map of the state functions
+state_funs = {"START":state_start, "REQUEST":state_request, \
+        "ADDRESS":state_address, "EDIT":state_edit}
+
+# map of the check functions
+check_funs = {"START":check_start, "REQUEST":check_request, \
+        "ADDRESS":check_address, "EDIT":check_edit}
 
     
 

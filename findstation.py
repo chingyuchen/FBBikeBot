@@ -1,7 +1,28 @@
+################################################################################
+
+'''
+File : findstation.py
+Author: Ching-Yu Chen
+
+Description:
+findstation module helps user to find the nearest bike stations.
+
+Copyright (c) 2017 Ching-Yu Chen
+'''
+
+################################################################################
+
 import citybikes
 from geopy.distance import vincenty
 
+################################################################################
+
 def in_coordinates(lat, lon):
+
+    '''
+    Return the nearest station according to the lat and lon.
+    '''
+
     # check arguments
     try:
         client = citybikes.Client()
@@ -21,10 +42,7 @@ def in_coordinates(lat, lon):
        
         return stations
         
-#-------------------------------------------------------------------------
-
-def in_address(addr):
-    pass
+################################################################################
 
 if __name__ == "__main__":
 

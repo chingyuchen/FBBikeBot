@@ -1,3 +1,17 @@
+################################################################################
+
+'''
+File : favsfuns.py
+Author: Ching-Yu Chen
+
+Description:
+favsfuns includes the check and state functions of the "/favs" command program. 
+The favs program send users their list of favorite locations.
+
+Copyright (c) 2017 Ching-Yu Chen
+'''
+
+################################################################################
 
 import geocoder
 import sys 
@@ -10,6 +24,7 @@ from geopy.distance import vincenty
 
 ################################################################################
 
+# google geocode key
 geokey = ""
 try:
     with open('geocoder_key', 'r') as f:
@@ -19,18 +34,25 @@ try:
 except:
     print("error in accessing geocoder key")
 
-# Token of the bot.
-TOKEN = ""
-with open('Token', 'r') as f:
-    TOKEN = f.read().strip()
-    f.close()
-
 ################################################################################
 
 def check_start(data):
+
+    '''
+    The check fucntion of the start state. Check if command in data is valid. 
+    Return true.
+    '''
+
     return True
 
+#------------------------------------------------------------------------------
+
 def state_start(user, msg_content=None, args=None):
+
+    '''
+    Start state function. Send user the address of his/her favorite locations.
+    Return end state.
+    '''
 
     favs = {"fav1":"", "fav2":"", "fav3":""}
     for key in favs:
@@ -49,7 +71,6 @@ def state_start(user, msg_content=None, args=None):
                 raise ImportError("problem using geocoder")
                 return ["END", None]
 
-
     text = "Here's the list of your favorite locations,\n"\
             "* fav1 : \n{favs1}\n"\
             "* fav2 : \n{favs2}\n"\
@@ -62,7 +83,10 @@ def state_start(user, msg_content=None, args=None):
 
 ################################################################################
 
+# map of state functions
 state_funs = {"START":state_start}
+
+# map of check fuctions
 check_funs = {"START":check_start}
 
 

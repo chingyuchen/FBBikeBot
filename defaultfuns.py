@@ -1,3 +1,17 @@
+##################################################################################
+
+'''
+File : defaultfuns.py
+Author: Ching-Yu Chen
+
+Description:
+defaultfuns includes the check and state functions of the "/default" command 
+program. The default program ask users current or favorite locations and provide
+the information of the nearest bike station.
+
+Copyright (c) 2017 Ching-Yu Chen
+'''
+
 ################################################################################
 import sys 
 sys.path.insert(0, '/home/chingyuc/CYCFBbot')
@@ -16,9 +30,9 @@ with open('Token', 'r') as f:
     TOKEN = f.read().strip()
     f.close()
 
-
 #-------------------------------------------------------------------------------
 
+# sql file of the users' info
 sqlfile = "usersinfo.sqlite3"  
 with open('usersinfo.sqlite3', 'a+') as f:
 
@@ -36,12 +50,20 @@ f.close()
 #Deault
 
 def check_start(data):
+
+    '''
+    Check if input command in data is valid for start state. Return true.
+    '''
+
     return True
+
+#-------------------------------------------------------------------------------
 
 def state_start(user, msg_content=None, args=None):
         
     '''
-    The start state function. Return enum of the next state function and args. 
+    The start state function. Send user quick reply message to ask where the 
+    user would like to search. Return the next state. 
     '''
 
     quick_replies = [
@@ -74,9 +96,10 @@ def state_start(user, msg_content=None, args=None):
 def check_location(data):
 
     '''
-    Return true if the respond message for the request state function from 
-    the user is valid. Otherwise, return false.
+    Return true if the respond message in data is start state quick replu option. 
+    Otherwise, return false.
     '''
+
     [chat_id, msg_type, msg_content] = msganalyzer.glance_msg(data)
         
     if msg_type is 'sent_msg': 
@@ -98,6 +121,13 @@ def check_location(data):
 #-------------------------------------------------------------------------------
 
 def state_location(user, msg_content=None, args=None):
+    
+    '''
+    Location state function. According to the option user reply in msg_content, 
+    search the three nearest bike stations and message the users. If user's 
+    replied option (favorite locations) is not set yet, ask the user set first. 
+    Return next state and the stations' locations.
+    '''
 
     location = {}
     loca = ""
@@ -124,7 +154,7 @@ def state_location(user, msg_content=None, args=None):
         messenger.sent_text(user, "Sorry no station is found")
     else:
         posi1 = (location['lat'], location['long'])
-        order = ["[1st]\n", "[2nd]\n", "[3rd]\n"]
+        #order = ["[1st]\n", "[2nd]\n", "[3rd]\n"]
         for i in reversed(range(len(sta))):
             name = sta[i][0]['name']
             free = sta[i][0]['free_bikes']
@@ -135,28 +165,30 @@ def state_location(user, msg_content=None, args=None):
             emojf = u"\U0001F6B2"*min(7, free)
             emojs = u"\U0001F17F"*min(10, slots)
 
-            text = "{staorder}{sta}"\
+            text = "{sta}"\
                 "\n{bikes} bikes, {park} slots.\
                 \n{imgbikes}\
                 \n{imgslots}\
                 \n{dist} meters away."\
-                .format(staorder=order[i], sta=name, bikes=free, park=slots, imgbikes=emojf,\
+                .format(sta=name, bikes=free, park=slots, imgbikes=emojf,\
                 imgslots=emojs, dist=dis, target=loca)
 
-               
             buttons = [{"type":"postback", "title":"View in map", "payload":"viewmap" + str(i)}]
             if i is 0:
                 done = {"type":"postback", "title":"Done!", "payload":"done"}
                 buttons.append(done)
             messenger.send_buttons(user, text, buttons)
 
-
     return ["MAP", sta]
-
 
 #-------------------------------------------------------------------------------
 
 def check_map(data):
+
+    '''
+    check function of the map state. If the user command in data is valid return 
+    true, otherwise, return false.
+    '''
     
     [chat_id, msg_type, msg_content] = msganalyzer.glance_msg(data)
         
@@ -174,6 +206,12 @@ def check_map(data):
 
 def state_map(user, msg_content, args):
 
+    '''
+    Map state function. Send user the map according to the option from msg_content
+    and the locations in args. Or return end state if user send done in previous
+    state. 
+    '''
+
     if msg_content['title'] == 'Done!':
         return ["END", None]
 
@@ -190,7 +228,10 @@ def state_map(user, msg_content, args):
 
 ################################################################################
 
+# state functions map
 state_funs = {"START":state_start, "LOCATION":state_location, "MAP":state_map}
+
+# check functions map
 check_funs = {"START":check_start, "LOCATION":check_location, "MAP":check_map}
 
 ################################################################################
