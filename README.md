@@ -1,11 +1,13 @@
+
 #FBBikeBot 
+
 ## About
 FBBikeBot is a facebook messenger bot provides the user real-time information of the 
 word-wide bike-share system. Users can get nearest bike-share station information
 by sending current location or address.
                  
-## Installation
-`pip3 install git+https://github.com/chingyuchen/FBBikeBot`
+## Usage
+Simply talk to FBBikeBot on facebook!
                  
 ## Example
 
@@ -33,9 +35,9 @@ By typing command `/favs`, FBBikeBot will show your list of favorite locations.
 If you need the command instruction, type `/help` then FBBikeBot will show you the list of commands manual.             
 <a href="url"><img src="https://github.com/chingyuchen/FBBikeBot/blob/master/photo_2017-09-18_05-33-38.jpg" height="264" width="213"></a>
               
-## Usage
-Simply talk to FBBikeBot on facebook!
+## Installation
+`pip3 install git+https://github.com/chingyuchen/FBBikeBot`
 
 ## Add commands
-FBBikeBot is an example of [CYCFBBot](https://github.com/chingyuchen/CYCFBBot)
+FBBikeBot is an example of [CYCFBBot](https://github.com/chingyuchen/CYCFBBot).
 Developers can use the add programs functions of fbbot module in fbbikebot.py to add more commands.
