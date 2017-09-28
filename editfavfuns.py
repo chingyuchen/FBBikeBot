@@ -54,7 +54,7 @@ def state_start(user, msg_content=None, args=None):
     and ask which one to edit in quick reply. Return next state.
     '''
 
-    favs = {"fav1":"", "fav2":"", "fav3":""}
+    favs = {"fav1":"", "fav2":""}
     for key in favs:
         info = handleuserinfo.get(user, key)
         if info[0] is not None and info[1] is not None:
@@ -75,9 +75,8 @@ def state_start(user, msg_content=None, args=None):
     text = "Here's the list of your favorite locations,\n"\
             "* fav1 : \n{favs1}\n"\
             "* fav2 : \n{favs2}\n"\
-            "* fav3 : \n{favs3}\n"\
             "\nWhich one would you like to edit?".format(\
-            favs1=favs["fav1"], favs2=favs["fav2"], favs3=favs["fav3"])
+            favs1=favs["fav1"], favs2=favs["fav2"])
     
     quick_replies = [
         {
@@ -89,11 +88,6 @@ def state_start(user, msg_content=None, args=None):
             "content_type":"text",
             "title":"Fav2",
             "payload":"fav2"
-        },
-        {
-            "content_type":"text",
-            "title":"Fav3",
-            "payload":"fav3"
         }
     ]
     
@@ -116,8 +110,7 @@ def check_request(data):
     if msg_type is 'sent_msg':  
         if 'text' in msg_content:
             if msg_content['text'] == 'Fav1' or \
-                msg_content['text'] == 'Fav2' or\
-                msg_content['text'] == 'Fav3':
+                    msg_content['text'] == 'Fav2':
                 return True
             else:
                 return False

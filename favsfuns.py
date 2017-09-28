@@ -54,7 +54,7 @@ def state_start(user, msg_content=None, args=None):
     Return end state.
     '''
 
-    favs = {"fav1":"", "fav2":"", "fav3":""}
+    favs = {"fav1":"", "fav2":""}
     for key in favs:
         info = handleuserinfo.get(user, key)
         if info[0] is not None and info[1] is not None:
@@ -74,8 +74,7 @@ def state_start(user, msg_content=None, args=None):
     text = "Here's the list of your favorite locations,\n"\
             "* fav1 : \n{favs1}\n"\
             "* fav2 : \n{favs2}\n"\
-            "* fav3 : \n{favs3}\n"\
-            "\n".format(favs1=favs["fav1"], favs2=favs["fav2"], favs3=favs["fav3"])
+            "\n".format(favs1=favs["fav1"], favs2=favs["fav2"])
     messenger.send_text(user, text)
     
     return ["END", None]

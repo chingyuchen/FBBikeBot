@@ -68,6 +68,9 @@ def state_start(user, msg_content=None, args=None):
 
     quick_replies = [
         {
+            "content_type":"location"
+        },
+        {
             "content_type":"text",
             "title":"Fav1",
             "payload":"fav1"
@@ -76,14 +79,6 @@ def state_start(user, msg_content=None, args=None):
             "content_type":"text",
             "title":"Fav2",
             "payload":"fav2"
-        },
-        {
-            "content_type":"text",
-            "title":"Fav3",
-            "payload":"fav3"
-        },
-        {
-            "content_type":"location"
         }
     ]
 
@@ -105,8 +100,7 @@ def check_location(data):
     if msg_type is 'sent_msg': 
         if 'text' in msg_content:
             if msg_content['text'] == 'Fav1' or \
-                msg_content['text'] == 'Fav2' or\
-                msg_content['text'] == 'Fav3':
+                    msg_content['text'] == 'Fav2':
                 return True
             else:
                 return False
@@ -137,7 +131,7 @@ def state_location(user, msg_content=None, args=None):
         info = handleuserinfo.get(user, option)
         if info[0] is None or info[1] is None:
             messenger.send_text(user, 'The favorite location is'
-                ' not set yet. Please use /editFav to set')
+                ' not set yet. Please type /editFav to set')
             return ["END", None]
         else: 
             loca = msg_content['text']

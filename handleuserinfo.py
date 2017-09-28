@@ -31,7 +31,7 @@ def run():
     conn = sqlite3.connect(filename)
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS Favs (id TEXT, fav1lati REAL,'
-        ' fav1lon REAL, fav2lati REAL, fav2lon REAL, fav3lati REAL, fav3lon REAL)')
+        ' fav1lon REAL, fav2lati REAL, fav2lon REAL)')
     conn.commit()
     conn.close()
 

@@ -64,7 +64,7 @@ state_funs = defaultfuns.state_funs
 add_funs(pgmcmd, check_funs, state_funs)
 
 # Add editfav
-pgmcmd = "/editfav"
+pgmcmd = "/editFav"
 fbbot.add_cmdpgm(pgmcmd)
 check_funs = editfavfuns.check_funs
 state_funs = editfavfuns.state_funs
